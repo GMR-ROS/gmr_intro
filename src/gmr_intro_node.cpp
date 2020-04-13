@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   // Start ROS within the context of this node.
   ros::init(argc, argv, "gmr_intro_node");
   // Declare node.
-  ros::NodeHandle nh;
+  ros::NodeHandle nh("~");
   ros::Rate loop_rate(50);      //Hz
 
   ros::Publisher pub_left_rpm = nh.advertise<std_msgs::Float32> ("/left_rpm",1);
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   double axle_track, wheel_radius, gear_ratio, rpm_ref, gaussian_noise_mean, gaussian_noise_stddev;
   nh.param("/axle_track", axle_track, 0.5);                         //meters
   nh.param("/gaussian_noise_mean", gaussian_noise_mean, 0.0);       //rpm
-  nh.param("/gaussian_noise_stddev", gaussian_noise_stddev, 0.0);   //rpm
+  nh.param("/gaussian_noise_stddev", gaussian_noise_stddev, 1.0);   //rpm
   nh.param("/gear_ratio", gear_ratio, 20.0);                        //ratio
   nh.param("/rpm_ref", rpm_ref, 15.0);                              //rpm
   nh.param("/wheel_radius", wheel_radius, 0.05);                    //meters
