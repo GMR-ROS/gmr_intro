@@ -45,8 +45,14 @@ int main(int argc, char **argv)
   std::default_random_engine generator_l, generator_r;
   std::normal_distribution<double> dist(gaussian_noise_mean, gaussian_noise_stddev);
 
-  ros::Time current_time, first_time = ros::Time::now(); 
+  ros::Time current_time, first_time = ros::Time::now(), initial_curve_time = first_time, initial_straight_time = first_time; 
   ros::Duration(0.02).sleep();
+
+  double vl, vr, wz, t_curve;
+  vl = -rpm_ref*wheel_radius*2*M_PI/60.0;
+  vr = -vl;
+  wz = (vr-vl)/axle_track;
+  t_curve = 0.5*M_PI/wz;
 
   while(ros::ok())
   {
@@ -54,19 +60,16 @@ int main(int argc, char **argv)
     nh.setParam("/gear_ratio", gear_ratio);
     nh.setParam("/wheel_radius", wheel_radius);
     current_time = ros::Time::now();
-    double vl, vr, wz, t_curve;
-    vl = -rpm_ref*wheel_radius*2*M_PI/60.0;
-    vr = -vl;
-    wz = (vr-vl)/axle_track;
-    t_curve = 0.5*M_PI/wz*1000;
-    if(int(1000*current_time.toSec()-1000*first_time.toSec())%int(t_curve) < 20 && toggle_curve)
+    if(current_time.toSec() - initial_curve_time.toSec() > t_curve && toggle_curve)
     {     
       toggle_curve = !toggle_curve;
+      initial_straight_time = current_time;
       ROS_INFO_STREAM("Toggle");
     }
-    else if(int(1000*current_time.toSec()-1000*first_time.toSec())%5000 < 20 && !toggle_curve )
+    else if(current_time.toSec() - initial_straight_time.toSec() > 5.0 && !toggle_curve )
     {
       toggle_curve = !toggle_curve;
+      initial_curve_time = current_time;
       ROS_INFO_STREAM("Toggle");
 
     }
