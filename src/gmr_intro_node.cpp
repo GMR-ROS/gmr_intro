@@ -4,12 +4,12 @@
 #include <random>
 #include <std_srvs/Trigger.h>
 
-bool toogle_robot = true;
+bool toggle_robot = true;
 
-bool toogleRobot(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
+bool toggleRobot(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
 {
-  toogle_robot = !toogle_robot;
-
+  toggle_robot = !toggle_robot;
+  //ROS_WARN_STREAM("toggling robot");
   response.success = true;
   response.message = "Someone toggled me...";
   return true;
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
   ros::Publisher pub_left_rpm = nh.advertise<std_msgs::Float32> ("/left_rpm",1);
   ros::Publisher pub_right_rpm = nh.advertise<std_msgs::Float32> ("/right_rpm",1);
-  ros::ServiceServer service = nh.advertiseService("/toogle_robot", toogleRobot);
+  ros::ServiceServer service = nh.advertiseService("/toggle_robot", toggleRobot);
 
   double axle_track, wheel_radius, gear_ratio, rpm_ref, gaussian_noise_mean, gaussian_noise_stddev;
   nh.param("/axle_track", axle_track, 0.5);                         //meters
@@ -54,13 +54,24 @@ int main(int argc, char **argv)
     nh.setParam("/gear_ratio", gear_ratio);
     nh.setParam("/wheel_radius", wheel_radius);
     current_time = ros::Time::now();
-    if(int(1000*current_time.toSec()-1000*first_time.toSec())%5000 < 20)
+    double vl, vr, wz, t_curve;
+    vl = -rpm_ref*wheel_radius*2*M_PI/60.0;
+    vr = -vl;
+    wz = (vr-vl)/axle_track;
+    t_curve = 0.5*M_PI/wz*1000;
+    if(int(1000*current_time.toSec()-1000*first_time.toSec())%int(t_curve) < 20 && toggle_curve)
     {     
       toggle_curve = !toggle_curve;
       ROS_INFO_STREAM("Toggle");
     }
+    else if(int(1000*current_time.toSec()-1000*first_time.toSec())%5000 < 20 && !toggle_curve )
+    {
+      toggle_curve = !toggle_curve;
+      ROS_INFO_STREAM("Toggle");
 
-    if(toogle_robot)
+    }
+
+    if(toggle_robot)
     {
       if(toggle_curve)
       {
@@ -82,6 +93,7 @@ int main(int argc, char **argv)
 
     pub_left_rpm.publish(wl);
     pub_right_rpm.publish(wr);
+    //ROS_INFO_STREAM("speeds published");
     ros::spinOnce();
     loop_rate.sleep();
   }

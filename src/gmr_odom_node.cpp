@@ -56,8 +56,8 @@ int main(int argc, char **argv)
     dt = cur_t.toSec() - last_t.toSec();
     last_t = cur_t;
     th += w*dt;
-    x += v*std::cos(th);
-    y += v*std::sin(th);
+    x += v*std::cos(th)*dt;
+    y += v*std::sin(th)*dt;
 
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
 

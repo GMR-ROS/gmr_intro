@@ -1,6 +1,6 @@
 # Introdução de ROS e robôs móveis terrestres
 
-Após clonar este repositório ao seu ROS workspace/src local (`$git clone https://github.com/akihirohh/gmr_intro.git `), não se esqueça de compilar:
+Após clonar este repositório ao seu ROS workspace/src local (`$git clone https://bitbucket.org/grupomecatronica/gmr_intro.git`), não se esqueça de compilar:
 ```console
 user@pc: ~/ros_ws$ catkin_make
 ```
