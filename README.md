@@ -151,6 +151,7 @@ user@pc: ~/ros_ws$ rosrun sub_rpm sub_rpm_node
 Agora, você é capaz de usar o dados de um tópico dentro do seu código! 
 
 
+Contato: Akihiro (akihirohh@gmail.com)
 
 
 
